@@ -1,0 +1,8 @@
+librosa
+torch
+torchaudio
+pygame
+sounddevice
+tqdm
+requests
+setuptools<81
