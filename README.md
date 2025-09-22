@@ -1,61 +1,55 @@
 # ISG Pragmatic Similarity Code
-## Author: Andy Segura
+## Author: Marcel de Korte, based on work from Andy Segura
 
-## Feature Extractor
-  Uses pytorch to extract transformation layers from an audio file.
-  Utilizes either the HuBERT Large, Wav2Vec2.0 Large, or WavLM Large models
-  Specify which model you want to use by
-  bundle: String : 'hubert_l' or 'wav2vec_l' or 'wavlm_l' expected
-  
-  Once the features are extracted you can use them all or get them mean
-  pooled by this code. 
+This toolkit is primarily intended for computing the pragmatic similarity between a reference sample and a set of target audio samples.
 
+## Installation
 
-## Typical Classifier
-The typical classifier uses a leave one out strategy along with the
-kNN algorithm to try to predict each Participant as belonging to the
-typical group or atypical group. Predictions are made by using the features
-extracted and mean pooled from the HuBert Large SSL Model. The metric for
-kNN is an adapted version of cosine_similarity where we use (1-cosine_similarity)
-in order to get a smaller number for clips that are more similar. This will give an
-output that resembles Euclidean Distance.
-
-
-In order to use the classifier you have to pass it a list of 
-Participant objects. Each participant object needs a list of clip objects. 
-Here is an example of how to create a list of clip objects. 
-
-```
-  feature_extractor = fe.FeatureExtractor('hubert_l')
-  participant_clips_directory = ... # directory where clips are stored
-  clips_list = []
-  for clip_path in os.listdir(participant_clips_directory):
-      feature_avgs_all_layers = feature_extractor.get_features_averages_from_fp(clip_path)
-      new_clip = Clip(feature_avgs_all_layers, clip_path)
-      clips_list.append(new_clip)
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/Pragmatic_Similarity_Computation.git
+cd Pragmatic_Similarity_Computation
 ```
 
-Once you have the clips list complete for a single participant you can now create
-a Participant object. Age and gender attributes are optional
+2. Create and activate a virtual environment (optional but recommended):
+```bash
+# Windows
+python -m venv venv
+.\venv\Scripts\activate
 
-```
-new_participant = Participant(participant_id, group_label, clips_list, age, gender)
-```
-
-Once you have a list of participant objects you can them pass them to the Typical Classifier
-to get results. You need to pass the list of participants and the labels for the typical
-and atypical groups. Each one of your participants should have one of these labels for 
-their group label. 
-
-```
-classifier = TypicalClassifier(participants, 'TD', 'SLI')
-classifier.run()
-classifier.write_all_csv_results('data/', 'ENNI')
+# Linux/Mac
+python -m venv venv
+source venv/bin/activate
 ```
 
-If you want to print the results for a single participant you can use
-the following
-```
-classifier.write_participant_clip_results_csv(csv_path, participant_id)
+Alternatively, use a conda or mamba environment.
+
+3. Install dependencies:
+```bash
+pip install -r requirements.txt
 ```
 
+## Quick Start
+
+The easiest way to get familiar with the code is through our Jupyter notebook tutorial:
+
+1. Launch Jupyter:
+```bash
+jupyter notebook
+```
+
+2. Navigate to `notebooks/Pragmatic_Similarity_Tutorial.ipynb`
+
+The tutorial walks you through:
+- Loading and preprocessing audio files
+- Extracting features
+- Computing similarities
+- Analyzing results
+
+## Dataset
+
+The default dataset for this project is the DRAL dataset. The notebook contains information for how to obtain and organize this data. Alternative datasets can be supported in a similar way.
+
+## Notes
+
+Note that read speech and/or monologues will typically have lower cosine similarity than (in-corpus) dialogue samples, given the differences in speaking patterns and (lack of) pragmatic intent.
