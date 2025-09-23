@@ -1,13 +1,13 @@
 # ISG Pragmatic Similarity Code
-## Author: Marcel de Korte, based on work from Andy Segura
+## Author: Marcel de Korte, revised for generality and easy of use from Andy Segura
 
-This toolkit is primarily intended for computing the pragmatic similarity between a reference sample and a set of target audio samples.
+This toolkit is intended for computing the pragmatic similarity between a reference sample and a set of target audio samples.
 
 ## Installation
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/Pragmatic_Similarity_Computation.git
+git clone https://github.com/mdekorte/Pragmatic_Similarity_Computation.git
 cd Pragmatic_Similarity_Computation
 ```
 
@@ -41,14 +41,14 @@ jupyter notebook
 2. Navigate to `notebooks/Pragmatic_Similarity_Tutorial.ipynb`
 
 The tutorial walks you through:
-- Loading and preprocessing audio files
-- Extracting features
-- Computing similarities
-- Analyzing results
+- How to load the audio files (optional)
+- Extracting features for target sentence
+- Computing similarities between target sentence and the corpus for comparison
+- Basic perceptual analysis
 
 ## Dataset
 
-The default dataset for this project is the DRAL dataset. The notebook contains information for how to obtain and organize this data. Alternative datasets can be supported in a similar way.
+The default dataset used is the DRAL dataset. The notebook contains information for how to obtain and organize this data. Alternative datasets can be supported in a similar way.
 
 ## Notes
 
