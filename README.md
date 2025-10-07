@@ -1,7 +1,7 @@
 # ISG Pragmatic Similarity Code
-## Author: Marcel de Korte, revised for generality and easy of use from Andy Segura
+## Author: Marcel de Korte, based on code by Andy Segura
 
-This toolkit is intended for computing the pragmatic similarity between a reference sample and a set of target audio samples.
+This code can be used to compute the pragmatic similarity between a recorded utterance and a set of reference audio samples, and have it return the most similar utterance.  It is thus a re-release of the Pragmatically Similar Utterance Finder Demonstration (Ward and Segura, Interspeech 2024). Its main difference is the easier install process: the key dataset is already included and does not need a separate install, and control is via a Jupyter notebook, rather than via a user interface. This allows for easy experimentation to understand the workings of the similarity metric. However, this version lacks the ability to "eavesdrop" on a human-human conversation and pull out live utterances to use as search seeds. It is therefore less suitable for live demos (since speech produced in response to a prompt is generally not very similar to anything in the reference set, which is all taken from live dialogs, and exhibits spontaneous speaking patterns and a rich diversity of pragmatic intents).
 
 ## Installation
 
@@ -52,4 +52,4 @@ The default dataset used is the DRAL dataset. The notebook contains information 
 
 ## Notes
 
-Note that read speech and/or monologues will typically have lower cosine similarity than (in-corpus) dialogue samples, given the differences in speaking patterns and (lack of) pragmatic intent.
+Note that read speech and/or monologues will typically lead to lower cosine similarities when compared to a dialog corpus like DRAL than (in-corpus) dialog samples, given the differences in speaking patterns and (lack of) pragmatic intent.

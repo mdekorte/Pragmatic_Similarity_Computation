@@ -23,3 +23,16 @@ def get_cosine_similarity(list_1, list_2):
     tensor_2 = _check_list_type(list_2)
     cos_sim = torch.nn.functional.cosine_similarity(tensor_1, tensor_2, dim=0)
     return cos_sim.item() # take out floating point number from tensor
+
+def get_euclidean_distance(list_1, list_2):
+    """
+    Calculates the Euclidean (L2) distance between two vectors.
+    Works on python lists, numpy arrays, and torch.Tensor objects.
+    :param list_1: first list passed to the euclidean distance formula
+    :param list_2: second list passed to the euclidean distance formula
+    :return: a floating point number representing the euclidean distance.
+    This is a value >= 0. The closer to 0, the more similar.
+    """
+    tensor_1 = _check_list_type(list_1)
+    tensor_2 = _check_list_type(list_2)
+    return torch.norm(tensor_1 - tensor_2, p=2).item()

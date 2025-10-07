@@ -15,7 +15,7 @@ class FeatureExtractor:
     """
     def __init__(self, bundle='hubert_l'):
         torch.random.manual_seed(0)  # Sets the same random weights everytime the model is run.
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # CUDA uses GPUs for computations.
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.bundle = self.get_bundle(bundle)
         self.model = self.bundle.get_model().to(self.device)
         self.print_info()
