@@ -1,7 +1,9 @@
 # ISG Pragmatic Similarity Code
 ## Author: Marcel de Korte, based on code by Andy Segura
 
-This code can be used to compute the pragmatic similarity between a recorded utterance and a set of reference audio samples, and have it return the most similar utterance.  It is thus a re-release of the Pragmatically Similar Utterance Finder Demonstration (Ward and Segura, Interspeech 2024). Its main difference is the easier install process: the key dataset is already included and does not need a separate install, and control is via a Jupyter notebook, rather than via a user interface. This allows for easy experimentation to understand the workings of the similarity metric. However, this version lacks the ability to "eavesdrop" on a human-human conversation and pull out live utterances to use as search seeds. It is therefore less suitable for live demos (since speech produced in response to a prompt is generally not very similar to anything in the reference set, which is all taken from live dialogs, and exhibits spontaneous speaking patterns and a rich diversity of pragmatic intents).
+This repository consists of two notebooks, Pragmatic_Similarity_Tutorial and Speech_Translation_Model_Tutorial. 
+Pragmatic_Similarity_Tutorial: This notebook can be used to compute the pragmatic similarity between a recorded utterance and a set of reference audio samples, and have it return the most similar utterance. It is thus a re-release of the Pragmatically Similar Utterance Finder Demonstration (Ward and Segura, Interspeech 2024). Its main difference is the easier install process: the key dataset is already included and does not need a separate install, and control is via a Jupyter notebook, rather than via a user interface. This allows for easy experimentation to understand the workings of the similarity metric. However, this version lacks the ability to "eavesdrop" on a human-human conversation and pull out live utterances to use as search seeds. It is therefore less suitable for live demos (since speech produced in response to a prompt is generally not very similar to anything in the reference set, which is all taken from live dialogs, and exhibits spontaneous speaking patterns and a rich diversity of pragmatic intents).
+Speech_Translation_Model_Tutorial: This notebook can be used to train a speech feature translation from English to Spanish and from Spanish to English. It is based on initial work from Javier Vazquez at the ISG Lab.
 
 ## Installation
 
@@ -38,7 +40,9 @@ The easiest way to get familiar with the code is through our Jupyter notebook tu
 jupyter notebook
 ```
 
-2. Navigate to `notebooks/Pragmatic_Similarity_Tutorial.ipynb`
+2. Navigate to one of the notebooks.
+
+2.1: To understand how pragmatic similarity is measured, use the notebook in: `notebooks/Pragmatic_Similarity_Tutorial.ipynb`
 
 The tutorial walks you through:
 - How to load the audio files (optional)
@@ -46,9 +50,15 @@ The tutorial walks you through:
 - Computing similarities between target sentence and the corpus for comparison
 - Basic perceptual analysis
 
+2.2: To understand how to train a feature translation model, use the notebook in: `notebooks/Speech_Translation_Model_Tutorial.ipynb`
+
+The tutorial walks you through:
+- How to extract features for the train and test data
+- How to train a simple MLP model that learns a mapping from Spanish to English or vice-versa.
+
 ## Dataset
 
-The default dataset used is the DRAL dataset. The notebook contains information for how to obtain and organize this data. Alternative datasets can be supported in a similar way.
+The default dataset used is the DRAL dataset. The notebooks contain information for how to obtain and organize this data. Alternative datasets can be supported in a similar way.
 
 ## Notes
 

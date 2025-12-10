@@ -25,7 +25,7 @@ more useful for detecting pragmatic similarity. We found 103 english features
 and 101 spanish features. 
 """
 
-def remove_losing_features(all_features, language='english'):
+def extract_winners(all_features, language='english'):
     if len(all_features) != 1024:
         print(f"features given must be of length 1024 not {len(all_features)}")
         sys.exit()

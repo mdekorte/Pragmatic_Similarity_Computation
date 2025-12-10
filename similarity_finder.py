@@ -1,6 +1,7 @@
 import csv
 import torch
 import os
+import numpy as np
 import feature_extractor as fe
 import feature_selection as fs
 from similarity_metrics import get_cosine_similarity, get_euclidean_distance
@@ -10,49 +11,43 @@ import pygame
 pygame.mixer.init()
 
 class SimilarityFinder:
-    def __init__(self, feature_selection=False, directory_path="", ssl_model='hubert_l', clips_for_comparison_path='data/dral_en.csv'):
+    def __init__(self, feature_selection=False, directory_path="", ssl_model='hubert_l', filelist='data/filelists/train_filelist_en.txt'):
         self.directory_path = Path(directory_path).as_posix() + "/"
         self.feature_selection = feature_selection
-        self.clips_for_comparison = self.read_clips(clips_for_comparison_path)
-        self.language = 'spanish' if '_es.csv' in clips_for_comparison_path else 'english'
+        self.language = 'spanish' if '_es.txt' in filelist else 'english'
+        self.clips_for_comparison = self.get_features(os.path.join(self.directory_path, filelist), os.path.join(self.directory_path, 'data', 'features'))
         self.times = []
         assert ssl_model in ['hubert_l', 'wav2vec_l', 'wavlm_l'], "ssl_model must be 'hubert_l', 'wav2vec_l', or 'wavlm_l'"
         self.feature_extractor = fe.FeatureExtractor(ssl_model)
 
-    # Reads a CSV file and returns a dictionary of clip paths and their feature averages
-    # Assumes the following CSV format:
-    # Row 1 + 3n: file path
-    # Row 2 + 3n: feature averages (comma-separated)
-    # Row 3 + 3n: empty row'
-    def read_clips(self, path):
-        full_path = os.path.join(self.directory_path, path)
-        clip_dic = {}
-        with open(full_path, 'r') as csv_file:
-            csv_reader = csv.reader(csv_file)
-            counter = 1
-            for row in csv_reader:
-                if counter == 1:
-                    file_path = row[0]
-                if counter == 2:
-                    features_avg = [float(x) for x in row]
-                    clip_dic[file_path] = features_avg
-                if counter == 3:
-                    counter = 0
-                counter += 1
-        return clip_dic
 
+    def get_features(self, filelist_loc, feature_dir):
+        with open(filelist_loc, 'r') as f:
+            filelist_items = [line.strip() for line in f if line.strip()]
+        clip_dict = {}
+        for filename in filelist_items:
+            feature_loc = os.path.join(feature_dir, filename.replace('.wav', '_features.npy'))
+            features = np.load(feature_loc)
+            if self.language == 'spanish':
+                features = fs.extract_winners(features, 'spanish') if self.feature_selection else features
+            elif self.language == 'english':
+                features = fs.extract_winners(features, 'english') if self.feature_selection else features
+            else:
+                raise ValueError("Language must be 'spanish' or 'english'")
+            clip_dict[filename] = features
+        return clip_dict
 
-    def find_similar(self, clip_to_find, metric='cosine'):
+    def find_similar(self, clip_to_find, target_loc, extract_with_padding=False, metric='cosine'):
+        print(f"Finding similar clips to: {clip_to_find} using {metric} similarity metric.")
         similarities = []
 
-        clip_to_find_avg = self.feature_extractor.get_24th_layer_features_averages(clip_to_find)
-        clip_to_find_avg = fs.remove_losing_features(clip_to_find_avg, self.language)
+        clip_to_find_avg = self.feature_extractor.get_24th_layer_features_averages(clip_to_find, extract_with_padding=extract_with_padding)
+        clip_to_find_avg = fs.extract_winners(clip_to_find_avg, self.language)
 
         dataset_to_search = self.clips_for_comparison
 
         for test_clip in dataset_to_search:
-            file_dir = os.path.dirname(os.path.abspath(__file__))
-            test_clip_path = os.path.abspath(os.path.join(file_dir, test_clip))
+            test_clip_path = os.path.abspath(os.path.join(target_loc, test_clip))
 
             clip_to_find = os.path.abspath(clip_to_find)
             if os.path.normcase(test_clip_path) == os.path.normcase(clip_to_find):
@@ -92,6 +87,3 @@ class SimilarityFinder:
         while pygame.mixer.music.get_busy():
             time.sleep(0.5)
         time.sleep(1)
-
-    def get_average_times(self):
-        print(f"average_times={sum(self.times)/len(self.times)}")

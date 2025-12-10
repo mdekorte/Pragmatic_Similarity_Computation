@@ -6,3 +6,5 @@ sounddevice
 tqdm
 requests
 setuptools<81
+pandas
+numpy

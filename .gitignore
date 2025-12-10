@@ -1,4 +1,6 @@
 __pycache__
 clips/*
 data/dral
+data/features
+Models
 notebooks/.ipynb_checkpoints

@@ -34,16 +34,18 @@ class FeatureExtractor:
         print(f"Sample Rate: {self.bundle.sample_rate}")
         print(f"model class: {self.model.__class__}")
 
-    def get_transformation_layers(self, path, plot_layers=False):
+    def get_transformation_layers(self, path, add_padding=False, padding_length_in_seconds=1.5, plot_layers=False):
         """
         Passes an audio file to a self-supervised machine learning model.
         :param path: path of the audio file : String
+        :param add_padding: adds silence padding to beginning and end of audio clip if true.
+        :param padding_length_in_seconds: length of silence padding to add in seconds.
         :param plot_layers: Will visualize the transformation layers if true.
         :return: A list of 24 3d tensors representing the 24 transformation layers
         Tensor Dimensions:
         1st = number of audio files processed at once
-        2nd = number of frames per audio file (One frame for every 10ms)
-        3rd = number of features extracted per frame (1024)
+        2nd = number of frames per audio file (One frame for every 20ms)
+        3rd = number of features extracted per frame (typically 1024)
         """
         if not os.path.exists(path):
             print(f"ERROR: {path} is not a valid file path")
@@ -52,21 +54,17 @@ class FeatureExtractor:
         waveform = waveform.to(self.device)
         if sample_rate != self.bundle.sample_rate:
             waveform = torchaudio.functional.resample(waveform, sample_rate, self.bundle.sample_rate)
+        
+        # Add silence padding if specified - stabilizes feature extraction at the edges of the audio clip
+        if add_padding:
+            padding_length_in_samples = int(padding_length_in_seconds * self.bundle.sample_rate)
+            silence_padding = torch.zeros((1, padding_length_in_samples)).to(self.device)
+            waveform = torch.cat((silence_padding, waveform, silence_padding), dim=1)
+        
         with torch.inference_mode():  # Disables gradient computation and back propagation.
             features, _ = self.model.extract_features(waveform)
         if plot_layers: self.plot_layers(features)
         return features
-
-    def get_features_averages_from_fp(self, file_path):
-        """
-        Calculates feature averages from all 24 transformation layers given the file path.
-        :param file_path: location where the audio clip is stored.
-        :return: A list of size 24 that represents the 24 transformation layers. Each element
-        in the list is another list of size 1024 representing the average values of the 1024
-        features the SSL models calculate per frame of the audio clip.
-        """
-        transformation_layers = self.get_transformation_layers(file_path)
-        return self.get_features_averages_from_tl(transformation_layers)
 
     def get_features_averages_from_tl(self, transformation_layers):
         """
@@ -90,20 +88,32 @@ class FeatureExtractor:
             all_tl_averages.append(np.array(tl_averages))
         return all_tl_averages
 
-    """
-    We found the 24th layer had the highest correlation to our human judgement sessions
-    """
-    def get_24th_layer_features_averages(self, file_path):
+
+    def remove_padding_from_feats(self, features, feats_to_remove=75):
+        """
+        Function to remove padding silence features from beginning and end of audio clip.
+        The padding was added in order to get better feature extraction from the SSL models.
+        :param features: 3d tensor representing transformation layer features.
+        :param feats_to_remove: number of features to remove from beginning and end. Change if frame rate changes (now based on 1500/20ms).
+        :return: 3d tensor representing transformation layer features without silence features.
+        """
+        return features[:, feats_to_remove:-feats_to_remove, :]
+
+    def get_24th_layer_features_averages(self, file_path, extract_with_padding=False):
         """
         We found the 24th layer had the highest correlation when compared to human judgements.
         This method takes in a file path and returns the feature averages from the 24th layer only.
         :param file_path: path where the audio clip is stored.
+        :param extract_with_padding: whether to add padding silence when extracting features.
         :return: a 1d numpy array of size 1024 that represent the average value of the features
         calculated in the 24th layer.
         """
-        transformation_layers = self.get_transformation_layers(file_path)
+        transformation_layers = self.get_transformation_layers(file_path, add_padding=extract_with_padding)
         layer = transformation_layers[23] # use only the 24th layer
-        return self.get_features_averages_from_tl([layer])[0]
+        if extract_with_padding:
+            return self.get_features_averages_from_tl([self.remove_padding_from_feats(layer)])[0]
+        else:
+            return self.get_features_averages_from_tl([layer])[0]
 
     def plot_layers(self, features):
         """
@@ -119,4 +129,3 @@ class FeatureExtractor:
             ax[i].set_ylabel("Frame (time-axis)")
         plt.tight_layout()
         plt.show()
-
