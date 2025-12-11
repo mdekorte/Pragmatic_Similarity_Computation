@@ -50,7 +50,7 @@ The tutorial walks you through:
 - How to load the audio files (optional)
 - Extracting features for target sentence
 - Computing similarities between target sentence and the corpus for comparison
-- Basic perceptual analysis
+- Basic listening analysis
 
 2.2: To understand how to train a feature translation model, use the notebook in: `notebooks/Speech_Translation_Model_Tutorial.ipynb`
 
