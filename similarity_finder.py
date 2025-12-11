@@ -1,5 +1,3 @@
-import csv
-import torch
 import os
 import numpy as np
 import feature_extractor as fe
