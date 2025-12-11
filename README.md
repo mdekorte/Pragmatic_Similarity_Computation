@@ -64,5 +64,6 @@ The default dataset used is the DRAL dataset. The notebooks contain information 
 
 ## Notes
 
-<b>Note 1<b/>: One should expect that fragments of read speech and/or monologue speech will typically have lower cosine similarities when compared to a dialog corpus like DRAL than (in-corpus) dialog samples. This is mainly due to the differences in speaking patterns and (lack of) pragmatic intent in the read speech.
-<b>Note</b> 2: We have found that when extracting HuBERT features from audio without context, the beginnings and the ends of the features 'spike' in some tasks. To prevent this, we add 1.5 seconds of padding to the beginning and end of the audio, compute the features, and then remove the padding once the HuBERT features are computed. See 'feature_extractor.py' for details. 
+<b>Note 1</b>: One should expect that fragments of read speech and/or monologue speech will typically have lower cosine similarities when compared to a dialog corpus like DRAL than (in-corpus) dialog samples. This is mainly due to the differences in speaking patterns and (lack of) pragmatic intent in the read speech.
+
+<b>Note 2</b>: We have found that when extracting HuBERT features from audio without context, the beginnings and the ends of the features 'spike' in some tasks. To prevent this, we add 1.5 seconds of padding to the beginning and end of the audio, compute the features, and then remove the padding once the HuBERT features are computed. See 'feature_extractor.py' for details. 
