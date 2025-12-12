@@ -5,7 +5,7 @@ This repository consists of two notebooks, Pragmatic_Similarity_Tutorial and Spe
 
 <b>Pragmatic_Similarity_Tutorial</b>: This notebook can be used to compute the pragmatic similarity between a recorded utterance and a set of reference audio samples, and have it return the most similar utterance. It is thus a re-release of the Pragmatically Similar Utterance Finder Demonstration (Ward and Segura, Interspeech 2024). Its main difference is the easier install process: the key dataset is already included and does not need a separate install, and control is via a Jupyter notebook, rather than via a user interface. This allows for easy experimentation to understand the workings of the similarity metric. However, this version lacks the ability to "eavesdrop" on a human-human conversation and pull out live utterances to use as search seeds. It is therefore less suitable for live demos (since speech produced in response to a prompt is generally not very similar to anything in the reference set, which is all taken from live dialogs, and exhibits spontaneous speaking patterns and a rich diversity of pragmatic intents).
 
-<b>Speech_Translation_Model_Tutorial</b>: This notebook can be used to train a speech feature translation from English to Spanish and from Spanish to English. It is based on initial work from Javier Vazquez at the ISG Lab.
+<b>Speech_Translation_Model_Tutorial</b>: This notebook can be used to train a speech feature translation from English to Spanish and from Spanish to English. It is based on initial work from Javier Vazquez at the ISG Lab. Details from his work can be found [here](https://www.cs.utep.edu/nigel/ptransfer/Javier_Vazquez-MS.pdf).
 
 ## Installation
 
@@ -64,4 +64,6 @@ The default dataset used is the DRAL dataset. The notebooks contain information 
 
 ## Notes
 
-Note that read speech and/or monologues will typically lead to lower cosine similarities when compared to a dialog corpus like DRAL than (in-corpus) dialog samples, given the differences in speaking patterns and (lack of) pragmatic intent.
+<b>Note 1</b>: One should expect that fragments of read speech and/or monologue speech will typically have lower cosine similarities when compared to a dialog corpus like DRAL than (in-corpus) dialog samples. This is mainly due to the differences in speaking patterns and (lack of) pragmatic intent in the read speech.
+
+<b>Note 2</b>: We have found that when extracting HuBERT features from audio without context, the beginnings and the ends of the features 'spike' in some tasks. To prevent this, we add 1.5 seconds of padding to the beginning and end of the audio, compute the features, and then remove the padding once the HuBERT features are computed. See 'feature_extractor.py' for details. 
